@@ -2,9 +2,9 @@
 
 namespace App\Entity;
 
-use App\Repository\TaskRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use App\Repository\TaskRepository;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: TaskRepository::class)]
@@ -30,6 +30,10 @@ class Task
 
     #[ORM\Column(options: ["default" => false])]
     private bool $isDone = false;
+
+    #[ORM\ManyToOne(targetEntity: User::class)]
+    #[ORM\JoinColumn(nullable: false)]
+    private User $author;
 
     public function __construct()
     {
@@ -86,5 +90,17 @@ class Task
     public function toggle(bool $flag): void
     {
         $this->isDone = $flag;
+    }
+
+    public function getAuthor(): User
+    {
+        return $this->author;
+    }
+
+    public function setAuthor(User $author): self
+    {
+        $this->author = $author;
+
+        return $this;
     }
 }
