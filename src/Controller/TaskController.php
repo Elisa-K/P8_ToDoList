@@ -10,6 +10,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 class TaskController extends AbstractController
@@ -79,8 +80,10 @@ class TaskController extends AbstractController
     }
 
     #[Route('/tasks/{id}/delete', name: 'task_delete')]
+    #[IsGranted('ROLE_USER')]
     public function deleteTaskAction(Task $task, EntityManagerInterface $em): Response
     {
+        $this->denyAccessUnlessGranted('TASK_DELETE', $task);
         $em->remove($task);
         $em->flush();
 
