@@ -22,7 +22,8 @@ security:
                 always_use_default_target_path:  true
                 default_target_path: /
             entry_point: 'form_login'
-            logout: ~
+            logout:
+                target: /login
             # activate different ways to authenticate
             # https://symfony.com/doc/current/security.html#the-firewall
 
