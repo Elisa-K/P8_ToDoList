@@ -5,9 +5,13 @@
         {{ form_start(form, {'action' : path('task_create')}) }}
             {{ form_widget(form) }}
 
-            <button type="submit" class="btn btn-success pull-right">Ajouter</button>
+            <div class="d-flex justify-content-between">
+                <a href="{{ path('task_list') }}" class="btn btn-primary">Retour à la liste des tâches</a>
+
+                <button type="submit" class="btn btn-success text-end">Ajouter</button>
+            </div>
         {{ form_end(form) }}
 
-        <a href="{{ path('task_list') }}" class="btn btn-primary">Retour à la liste des tâches</a>
+
     </div>
 {% endblock %}

@@ -3,37 +3,43 @@
 {% block header_img %}<img class="slide-image" src="{{ asset('assets/img/todolist_content.jpg') }}" alt="todo list">{% endblock %}
 
 {% block body %}
-    <a href="{{ path('task_create') }}" class="btn btn-info pull-right">Créer une tâche</a>
+
     <div class="row">
+        <div class="col-12">
+            <a href="{{ path('task_create') }}" class="btn btn-info float-end">Créer une tâche</a>
+        </div>
         {% for task in tasks %}
-        <div class="col-sm-4 col-lg-4 col-md-4">
-            <div class="thumbnail">
-                <div class="caption">
-                    <h4 class="pull-right">
-                        {% if task.isDone %}<span class="glyphicon glyphicon-ok"></span>{% else %}<span class="glyphicon glyphicon-remove"></span>{% endif %}
-                    </h4>
-                    <h4><a href="{{ path('task_edit', {'id' : task.id }) }}">{{ task.title }}</a></h4>
-                    <p class="text-muted">
+        <div class="col-sm-4 mb-3 col-lg-4 col-md-4 ">
+            <div class="card h-100">
+                <div class="card-body">
+                    <div class="card-title d-flex justify-content-between">
+                        <h4><a href="{{ path('task_edit', {'id' : task.id }) }}" class="text-decoration-none">{{ task.title }}</a></h4>
+                        <h4 class="text-end">
+                            {% if task.isDone %}<i class="bi bi-check"></i>{% else %}<i class="bi bi-x"></i>{% endif %}
+                        </h4>
+                    </div>
+                    <p class="card-subtitle mb-2 text-body-secondary">
                         {% if task.author is not null %}
                             {{ task.author.username }}
                         {% else %}
                             {{ "anonyme" }}
                         {% endif %}
                     </p>
-                    <p>{{ task.content }}</p>
+                    <p class="card-text">{{ task.content }}</p>
                 </div>
-                <div>
-                    <form action="{{ path('task_toggle', {'id' : task.id }) }}">
-                        <button class="btn btn-success btn-sm pull-right">
-                            {% if not task.isDone %}Marquer comme faite{% else %}Marquer non terminée{% endif %}
-                        </button>
-                    </form>
-                    {% if is_granted('TASK_DELETE', task)  %}
+
+            <div class="card-footer d-flex justify-content-end">
+                {% if is_granted('TASK_DELETE', task)  %}
                     <form action="{{ path('task_delete', {'id' : task.id }) }}">
                         <button class="btn btn-danger btn-sm pull-right">Supprimer</button>
                     </form>
-                    {% endif %}
-                </div>
+                {% endif %}
+                <form action="{{ path('task_toggle', {'id' : task.id }) }}">
+                    <button class="btn btn-success btn-sm pull-right">
+                        {% if not task.isDone %}Marquer comme faite{% else %}Marquer non terminée{% endif %}
+                    </button>
+                </form>
+            </div>
             </div>
         </div>
         {% else %}
