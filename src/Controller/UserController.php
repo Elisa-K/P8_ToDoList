@@ -6,6 +6,8 @@ use App\Entity\User;
 use App\Form\UserType;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use App\Handlers\UserHandlers\UserAddHandler;
+use App\Handlers\UserHandlers\UserEditHandler;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -22,24 +24,14 @@ class UserController extends AbstractController
     }
 
     #[Route('/users/create', name: 'user_create', methods: ['GET', 'POST'])]
-    public function register(Request $request, UserPasswordHasherInterface $userPasswordHasher, EntityManagerInterface $entityManager): Response
+    public function register(Request $request, UserAddHandler $handler): Response
     {
         $user = new User();
-        $form = $this->createForm(UserType::class, $user);
-        $form->handleRequest($request);
-        /** @var string $plainPassword */
-        $plainPassword = $form->get('password')->getData();
+        $form = $this->createForm(UserType::class, $user)->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $user->setPassword(
-                $userPasswordHasher->hashPassword(
-                    $user,
-                    $plainPassword
-                )
-            );
 
-            $entityManager->persist($user);
-            $entityManager->flush();
+            $handler->handle($user, $form);
 
             $this->addFlash('success', "L'utilisateur a bien été ajouté.");
 
@@ -52,24 +44,13 @@ class UserController extends AbstractController
     }
 
     #[Route('/users/{id}/edit', name: 'user_edit', methods: ['GET', 'POST'])]
-    public function editAction(User $user, Request $request, UserPasswordHasherInterface $userPasswordHasher, EntityManagerInterface $em): Response
+    public function editAction(User $user, Request $request, UserEditHandler $handler): Response
     {
-        $form = $this->createForm(UserType::class, $user);
-
-        $form->handleRequest($request);
-
-        /** @var string $plainPassword */
-        $plainPassword = $form->get('password')->getData();
+        $form = $this->createForm(UserType::class, $user)->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $user->setPassword(
-                $userPasswordHasher->hashPassword(
-                    $user,
-                    $plainPassword
-                )
-            );
 
-            $em->flush();
+            $handler->handle($user, $form);
 
             $this->addFlash('success', "L'utilisateur a bien été modifié");
 

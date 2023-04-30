@@ -7,7 +7,9 @@ use App\Entity\User;
 use App\Form\TaskType;
 use App\Repository\TaskRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use App\Handlers\TaskHandlers\TaskAddHandler;
 use Symfony\Component\HttpFoundation\Request;
+use App\Handlers\TaskHandlers\TaskEditHandler;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
@@ -32,21 +34,14 @@ class TaskController extends AbstractController
     }
 
     #[Route('/tasks/create', name: 'task_create', methods: ['GET', 'POST'])]
-    public function createAction(Request $request, EntityManagerInterface $em): Response
+    public function createAction(Request $request, TaskAddHandler $handler): Response
     {
         $task = new Task();
-        $form = $this->createForm(TaskType::class, $task);
-        $form->handleRequest($request);
+        $form = $this->createForm(TaskType::class, $task)->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
 
-            /** @var User $user */
-            $user = $this->getUser();
-
-            $task->setAuthor($user);
-
-            $em->persist($task);
-            $em->flush();
+            $handler->handle($task);
 
             $this->addFlash('success', 'La tâche a été bien été ajoutée.');
 
@@ -57,14 +52,14 @@ class TaskController extends AbstractController
     }
 
     #[Route('/tasks/{id}/edit', name: 'task_edit', methods: ['GET', 'POST'])]
-    public function editAction(Task $task, Request $request, EntityManagerInterface $em): Response
+    public function editAction(Task $task, Request $request, TaskEditHandler $handler): Response
     {
-        $form = $this->createForm(TaskType::class, $task);
-
-        $form->handleRequest($request);
+        $form = $this->createForm(TaskType::class, $task)->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $em->flush();
+
+            $handler->handle();
+
             $this->addFlash('success', 'La tâche a bien été modifiée.');
 
             return $this->redirectToRoute('task_list');
