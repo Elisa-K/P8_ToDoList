@@ -46,7 +46,7 @@ class UserTest extends KernelTestCase
 		$this->user->setUsername('');
 
 		$errors = $this->container->get('validator')->validate($this->user);
-		$this->assertCount(1, $errors);
+		$this->assertCount(2, $errors);
 	}
 
 	public function testTooShortUsername(): void

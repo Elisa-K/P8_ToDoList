@@ -36,24 +36,24 @@ class TaskControllerTest extends WebTestCase
 		$this->assertResponseStatusCodeSame(Response::HTTP_OK);
 	}
 
-	// public function testListTasksDoneNotLogged(): void
-	// {
-	// 	$this->client->request('GET', '/tasks/done');
-	// 	$this->assertResponseStatusCodeSame(Response::HTTP_FOUND);
-	// 	$this->client->followRedirect();
-	// 	$this->assertResponseStatusCodeSame(Response::HTTP_OK);
-	// 	$this->assertSelectorExists('label', 'Nom d\'utilisateur');
-	// }
+	public function testListTasksDoneNotLogged(): void
+	{
+		$this->client->request('GET', '/tasks/done');
+		$this->assertResponseStatusCodeSame(Response::HTTP_FOUND);
+		$this->client->followRedirect();
+		$this->assertResponseStatusCodeSame(Response::HTTP_OK);
+		$this->assertSelectorExists('label', 'Nom d\'utilisateur');
+	}
 
-	// public function testListTasksDoneLogged(): void
-	// {
-	// 	$userRepository = static::getContainer()->get(UserRepository::class);
-	// 	$testUser = $userRepository->findOneByEmail('user0@todo.com');
-	// 	$this->client->loginUser($testUser);
+	public function testListTasksDoneLogged(): void
+	{
+		$userRepository = static::getContainer()->get(UserRepository::class);
+		$testUser = $userRepository->findOneByEmail('user0@todo.com');
+		$this->client->loginUser($testUser);
 
-	// 	$this->client->request('GET', '/tasks/done');
-	// 	$this->assertResponseStatusCodeSame(Response::HTTP_OK);
-	// }
+		$this->client->request('GET', '/tasks/done');
+		$this->assertResponseStatusCodeSame(Response::HTTP_OK);
+	}
 
 	public function testCreateTaskNotLogged(): void
 	{
@@ -82,9 +82,24 @@ class TaskControllerTest extends WebTestCase
 		$this->assertSelectorExists('.alert-success');
 	}
 
+	public function testCreateTaskLoggedError(): void
+	{
+		$userRepository = static::getContainer()->get(UserRepository::class);
+		$testUser = $userRepository->findOneByEmail('user0@todo.com');
+		$this->client->loginUser($testUser);
+
+		$this->client->request('GET', '/tasks/create');
+		$this->client->submitForm('Ajouter', [
+			'task[title]' => '',
+			'task[content]' => 'test content'
+		]);
+
+		$this->assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
+	}
+
 	public function testEditTaskNotLogged(): void
 	{
-		$this->client->request('GET', '/tasks/1/edit');
+		$this->client->request('GET', '/tasks/2/edit');
 		$this->assertResponseStatusCodeSame(Response::HTTP_FOUND);
 		$this->client->followRedirect();
 		$this->assertResponseStatusCodeSame(Response::HTTP_OK);
@@ -97,10 +112,10 @@ class TaskControllerTest extends WebTestCase
 		$testUser = $userRepository->findOneByEmail('user0@todo.com');
 		$this->client->loginUser($testUser);
 
-		$this->client->request('GET', '/tasks/1/edit');
+		$this->client->request('GET', '/tasks/2/edit');
 		$this->client->submitForm('Modifier', [
-			'task[title]' => 'test',
-			'task[content]' => 'test content'
+			'task[title]' => 'test edit',
+			'task[content]' => 'test content edit'
 		]);
 
 		$this->assertResponseRedirects('/tasks', Response::HTTP_FOUND);
@@ -109,9 +124,24 @@ class TaskControllerTest extends WebTestCase
 		$this->assertSelectorExists('.alert-success');
 	}
 
+	public function testEditTaskLoggedError(): void
+	{
+		$userRepository = static::getContainer()->get(UserRepository::class);
+		$testUser = $userRepository->findOneByEmail('user0@todo.com');
+		$this->client->loginUser($testUser);
+
+		$this->client->request('GET', '/tasks/2/edit');
+		$this->client->submitForm('Modifier', [
+			'task[title]' => 't',
+			'task[content]' => 'test content edit'
+		]);
+
+		$this->assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
+	}
+
 	public function testToggleTaskNotLogged(): void
 	{
-		$this->client->request('GET', '/tasks/1/toggle');
+		$this->client->request('GET', '/tasks/2/toggle');
 		$this->assertResponseStatusCodeSame(Response::HTTP_FOUND);
 		$this->client->followRedirect();
 		$this->assertResponseStatusCodeSame(Response::HTTP_OK);
@@ -123,7 +153,7 @@ class TaskControllerTest extends WebTestCase
 		$testUser = $userRepository->findOneByEmail('user0@todo.com');
 		$this->client->loginUser($testUser);
 
-		$this->client->request('GET', '/tasks/1/toggle');
+		$this->client->request('GET', '/tasks/2/toggle');
 		$this->assertResponseRedirects('/tasks', Response::HTTP_FOUND);
 		$this->client->followRedirect();
 		$this->assertResponseStatusCodeSame(Response::HTTP_OK);
@@ -132,7 +162,7 @@ class TaskControllerTest extends WebTestCase
 
 	public function testDeleteTaskNotLogged(): void
 	{
-		$this->client->request('GET', '/tasks/1/delete');
+		$this->client->request('DELETE', '/tasks/2/delete');
 		$this->assertResponseStatusCodeSame(Response::HTTP_FOUND);
 		$this->client->followRedirect();
 		$this->assertResponseStatusCodeSame(Response::HTTP_OK);
@@ -148,7 +178,7 @@ class TaskControllerTest extends WebTestCase
 		$taskRepository = static::getContainer()->get(TaskRepository::class);
 		$testTask = $taskRepository->findOneBy(['author' => $testUser]);
 
-		$this->client->request('GET', '/tasks/' . $testTask->getId() . '/delete');
+		$this->client->request('DELETE', '/tasks/' . $testTask->getId() . '/delete');
 		$this->assertResponseRedirects('/tasks', Response::HTTP_FOUND);
 		$this->client->followRedirect();
 		$this->assertResponseStatusCodeSame(Response::HTTP_OK);
@@ -167,7 +197,7 @@ class TaskControllerTest extends WebTestCase
 		$taskRepository = static::getContainer()->get(TaskRepository::class);
 		$testTask = $taskRepository->findOneBy(['author' => $testAuthor]);
 
-		$this->client->request('GET', '/tasks/' . $testTask->getId() . '/delete');
+		$this->client->request('DELETE', '/tasks/' . $testTask->getId() . '/delete');
 		$this->assertResponseStatusCodeSame(Response::HTTP_FORBIDDEN);
 	}
 
@@ -180,7 +210,7 @@ class TaskControllerTest extends WebTestCase
 		$taskRepository = static::getContainer()->get(TaskRepository::class);
 		$testTask = $taskRepository->findOneBy(['author' => null]);
 
-		$this->client->request('GET', '/tasks/' . $testTask->getId() . '/delete');
+		$this->client->request('DELETE', '/tasks/' . $testTask->getId() . '/delete');
 		$this->assertResponseRedirects('/tasks', Response::HTTP_FOUND);
 		$this->client->followRedirect();
 		$this->assertResponseStatusCodeSame(Response::HTTP_OK);
@@ -197,7 +227,7 @@ class TaskControllerTest extends WebTestCase
 		$taskRepository = static::getContainer()->get(TaskRepository::class);
 		$testTask = $taskRepository->findOneBy(['author' => null]);
 
-		$this->client->request('GET', '/tasks/' . $testTask->getId() . '/delete');
+		$this->client->request('DELETE', '/tasks/' . $testTask->getId() . '/delete');
 
 		$this->assertResponseStatusCodeSame(Response::HTTP_FORBIDDEN);
 	}

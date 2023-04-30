@@ -85,6 +85,25 @@ class UserControllerTest extends WebTestCase
 		$this->assertSelectorExists('.alert-success');
 	}
 
+	public function testCreateUserAdminLoggedError(): void
+	{
+		$userRepository = static::getContainer()->get(UserRepository::class);
+		$testAdmin = $userRepository->findOneByEmail('admin@todo.com');
+		$this->client->loginUser($testAdmin);
+
+		$this->client->request('GET', '/users/create');
+		$this->client->submitForm('Ajouter', [
+			'user[username]' => '',
+			'user[email]' => 'user60@todo.com',
+			'user[password][first]' => 'password',
+			'user[password][second]' => 'password',
+			'user[roles]' => 'ROLE_USER'
+		]);
+
+		$this->assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
+
+	}
+
 	public function testEditUserNotLogged(): void
 	{
 		$this->client->request('GET', '/users/1/edit');
@@ -125,6 +144,27 @@ class UserControllerTest extends WebTestCase
 		$this->client->followRedirect();
 		$this->assertResponseStatusCodeSame(Response::HTTP_OK);
 		$this->assertSelectorExists('.alert-success');
+	}
+
+	public function testEditUserAdminLoggedError(): void
+	{
+		$userRepository = static::getContainer()->get(UserRepository::class);
+		$testAdmin = $userRepository->findOneByEmail('admin@todo.com');
+		$this->client->loginUser($testAdmin);
+
+		$testUser = $userRepository->findOneByEmail('user1@todo.com');
+
+		$this->client->request('GET', '/users/' . $testUser->getId() . '/edit');
+		$this->client->submitForm('Modifier', [
+			'user[username]' => 'u',
+			'user[email]' => 'user1@todo.com',
+			'user[password][first]' => 'password2',
+			'user[password][second]' => 'password2',
+			'user[roles]' => 'ROLE_USER'
+		]);
+
+		$this->assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
+
 	}
 
 }
