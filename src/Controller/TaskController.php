@@ -3,17 +3,15 @@
 namespace App\Controller;
 
 use App\Entity\Task;
-use App\Entity\User;
 use App\Form\TaskType;
+use App\Handlers\TaskHandlers\TaskAddHandler;
+use App\Handlers\TaskHandlers\TaskEditHandler;
 use App\Repository\TaskRepository;
 use Doctrine\ORM\EntityManagerInterface;
-use App\Handlers\TaskHandlers\TaskAddHandler;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
-use App\Handlers\TaskHandlers\TaskEditHandler;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Security\Http\Attribute\IsGranted;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 class TaskController extends AbstractController
 {
@@ -40,15 +38,14 @@ class TaskController extends AbstractController
         $form = $this->createForm(TaskType::class, $task)->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-
             $handler->handle($task);
 
             $this->addFlash('success', 'La tâche a été bien été ajoutée.');
 
             return $this->redirectToRoute('task_list');
         }
-        return $this->render('task/create.html.twig', ['form' => $form]);
 
+        return $this->render('task/create.html.twig', ['form' => $form]);
     }
 
     #[Route('/tasks/{id}/edit', name: 'task_edit', methods: ['GET', 'POST'])]
@@ -57,7 +54,6 @@ class TaskController extends AbstractController
         $form = $this->createForm(TaskType::class, $task)->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-
             $handler->handle();
 
             $this->addFlash('success', 'La tâche a bien été modifiée.');
@@ -71,7 +67,7 @@ class TaskController extends AbstractController
         ]);
     }
 
-    #[Route('/tasks/{id}/toggle', name: 'task_toggle', methods: ['GET'])]
+    #[Route('/tasks/{id}/toggle', name: 'task_toggle', methods: ['POST'])]
     public function toggleTaskAction(Task $task, EntityManagerInterface $em): Response
     {
         $task->toggle(!$task->isDone());
@@ -82,7 +78,6 @@ class TaskController extends AbstractController
         } else {
             $this->addFlash('success', sprintf('La tâche %s a bien été marquée comme non faite.', $task->getTitle()));
         }
-
 
         return $this->redirectToRoute('task_list');
     }
@@ -109,5 +104,4 @@ class TaskController extends AbstractController
 
         return $this->redirectToRoute('task_list');
     }
-
 }

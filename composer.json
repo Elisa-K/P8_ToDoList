@@ -1,4 +1,6 @@
 {
+    "name": "elisa-k/p8-todolist",
+    "description": "To Do List app",
     "type": "project",
     "license": "proprietary",
     "minimum-stability": "stable",

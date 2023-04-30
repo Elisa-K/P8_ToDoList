@@ -2,13 +2,13 @@
 
 namespace App\Entity;
 
+use App\Repository\TaskRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-use App\Repository\TaskRepository;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: TaskRepository::class)]
-#[ORM\Table("tasks")]
+#[ORM\Table('tasks')]
 #[ORM\HasLifecycleCallbacks]
 class Task
 {
@@ -17,24 +17,24 @@ class Task
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(options: ["default" => "CURRENT_TIMESTAMP"])]
+    #[ORM\Column(options: ['default' => 'CURRENT_TIMESTAMP'])]
     private \DateTimeImmutable $createdAt;
 
     #[ORM\Column(length: 255)]
-    #[Assert\NotBlank(message: "Vous devez saisir un titre.")]
+    #[Assert\NotBlank(message: 'Vous devez saisir un titre.')]
     #[Assert\Length(
         min: 2,
         max: 255,
-        minMessage: "Le titre doit contenir {{ limit }} caractères minimum",
-        maxMessage: "Le titre doit contenir {{ limit }} caractères maximum"
+        minMessage: 'Le titre doit contenir {{ limit }} caractères minimum',
+        maxMessage: 'Le titre doit contenir {{ limit }} caractères maximum'
     )]
     private string $title;
 
     #[ORM\Column(type: Types::TEXT)]
-    #[Assert\NotBlank(message: "Vous devez saisir du contenu.")]
+    #[Assert\NotBlank(message: 'Vous devez saisir du contenu.')]
     private string $content;
 
-    #[ORM\Column(options: ["default" => false])]
+    #[ORM\Column(options: ['default' => false])]
     private bool $isDone = false;
 
     #[ORM\ManyToOne(targetEntity: User::class)]

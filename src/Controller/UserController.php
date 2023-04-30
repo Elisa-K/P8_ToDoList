@@ -4,16 +4,13 @@ namespace App\Controller;
 
 use App\Entity\User;
 use App\Form\UserType;
-use App\Repository\UserRepository;
-use Doctrine\ORM\EntityManagerInterface;
 use App\Handlers\UserHandlers\UserAddHandler;
 use App\Handlers\UserHandlers\UserEditHandler;
+use App\Repository\UserRepository;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Security\Http\Attribute\IsGranted;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class UserController extends AbstractController
 {
@@ -30,7 +27,6 @@ class UserController extends AbstractController
         $form = $this->createForm(UserType::class, $user)->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-
             $handler->handle($user, $form);
 
             $this->addFlash('success', "L'utilisateur a bien été ajouté.");
@@ -49,7 +45,6 @@ class UserController extends AbstractController
         $form = $this->createForm(UserType::class, $user)->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-
             $handler->handle($user, $form);
 
             $this->addFlash('success', "L'utilisateur a bien été modifié");
@@ -59,5 +54,4 @@ class UserController extends AbstractController
 
         return $this->render('user/edit.html.twig', ['form' => $form, 'user' => $user]);
     }
-
 }

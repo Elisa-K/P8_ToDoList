@@ -141,7 +141,7 @@ class TaskControllerTest extends WebTestCase
 
 	public function testToggleTaskNotLogged(): void
 	{
-		$this->client->request('GET', '/tasks/2/toggle');
+		$this->client->request('POST', '/tasks/2/toggle');
 		$this->assertResponseStatusCodeSame(Response::HTTP_FOUND);
 		$this->client->followRedirect();
 		$this->assertResponseStatusCodeSame(Response::HTTP_OK);
@@ -153,7 +153,7 @@ class TaskControllerTest extends WebTestCase
 		$testUser = $userRepository->findOneByEmail('user0@todo.com');
 		$this->client->loginUser($testUser);
 
-		$this->client->request('GET', '/tasks/2/toggle');
+		$this->client->request('POST', '/tasks/2/toggle');
 		$this->assertResponseRedirects('/tasks', Response::HTTP_FOUND);
 		$this->client->followRedirect();
 		$this->assertResponseStatusCodeSame(Response::HTTP_OK);

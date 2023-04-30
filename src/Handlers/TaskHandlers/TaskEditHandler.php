@@ -6,15 +6,15 @@ use Doctrine\ORM\EntityManagerInterface;
 
 class TaskEditHandler
 {
-	private EntityManagerInterface $entityManager;
+    private EntityManagerInterface $entityManager;
 
-	public function __construct(EntityManagerInterface $entityManager)
-	{
-		$this->entityManager = $entityManager;
-	}
+    public function __construct(EntityManagerInterface $entityManager)
+    {
+        $this->entityManager = $entityManager;
+    }
 
-	public function handle(): void
-	{
-		$this->entityManager->flush();
-	}
+    public function handle(): void
+    {
+        $this->entityManager->flush();
+    }
 }

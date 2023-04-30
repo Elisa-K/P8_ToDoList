@@ -2,18 +2,17 @@
 
 namespace App\Entity;
 
-use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Validator\Constraints as Assert;
 use App\Repository\UserRepository;
-use Symfony\Component\Security\Core\User\UserInterface;
+use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
-#[ORM\Table("users")]
+#[ORM\Table('users')]
 #[UniqueEntity(fields: ['email'], message: 'Un compte est déjà existant avec cette email')]
 #[UniqueEntity(fields: ['username'], message: 'Un compte est déjà existant avec ce nom d\'utilisateur')]
-
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
@@ -32,7 +31,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private string $username;
 
     #[ORM\Column(length: 180, unique: true)]
-    #[Assert\NotBlank(message: "Vous devez saisir une adresse email.")]
+    #[Assert\NotBlank(message: 'Vous devez saisir une adresse email.')]
     #[Assert\Email(message: "Le format de l'adresse n'est pas correcte.")]
     private string $email;
 
@@ -46,10 +45,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @var string The hashed password
      */
     #[ORM\Column]
-    #[Assert\NotBlank(message: "Vous devez saisir un mot de passe.")]
+    #[Assert\NotBlank(message: 'Vous devez saisir un mot de passe.')]
     private string $password;
-
-
 
     public function getId(): ?int
     {
@@ -119,7 +116,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     public function eraseCredentials(): void
     {
-
     }
 
     public function getUsername(): string
