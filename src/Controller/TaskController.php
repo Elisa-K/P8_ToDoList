@@ -15,15 +15,23 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 class TaskController extends AbstractController
 {
-    #[Route('/tasks', name: 'task_list')]
+    #[Route('/tasks', name: 'task_list', methods: ['GET'])]
     public function listAction(TaskRepository $taskRepository): Response
     {
         return $this->render('task/list.html.twig', [
-            'tasks' => $taskRepository->findAll(),
+            'tasks' => $taskRepository->findBy(['isDone' => false]),
         ]);
     }
 
-    #[Route('/tasks/create', name: 'task_create')]
+    #[Route('/tasks/done', name: 'task_list_done', methods: ['GET'])]
+    public function listActionDone(TaskRepository $taskRepository): Response
+    {
+        return $this->render('task/list.html.twig', [
+            'tasks' => $taskRepository->findBy(['isDone' => true]),
+        ]);
+    }
+
+    #[Route('/tasks/create', name: 'task_create', methods: ['GET', 'POST'])]
     public function createAction(Request $request, EntityManagerInterface $em): Response
     {
         $task = new Task();
@@ -44,11 +52,11 @@ class TaskController extends AbstractController
 
             return $this->redirectToRoute('task_list');
         }
-        return $this->render('task/create.html.twig', ['form' => $form->createView()]);
+        return $this->render('task/create.html.twig', ['form' => $form]);
 
     }
 
-    #[Route('/tasks/{id}/edit', name: 'task_edit')]
+    #[Route('/tasks/{id}/edit', name: 'task_edit', methods: ['GET', 'POST'])]
     public function editAction(Task $task, Request $request, EntityManagerInterface $em): Response
     {
         $form = $this->createForm(TaskType::class, $task);
@@ -63,31 +71,46 @@ class TaskController extends AbstractController
         }
 
         return $this->render('task/edit.html.twig', [
-            'form' => $form->createView(),
+            'form' => $form,
             'task' => $task,
         ]);
     }
 
-    #[Route('/tasks/{id}/toggle', name: 'task_toggle')]
+    #[Route('/tasks/{id}/toggle', name: 'task_toggle', methods: ['GET'])]
     public function toggleTaskAction(Task $task, EntityManagerInterface $em): Response
     {
         $task->toggle(!$task->isDone());
         $em->flush();
 
-        $this->addFlash('success', sprintf('La tâche %s a bien été marquée comme faite.', $task->getTitle()));
+        if ($task->isDone()) {
+            $this->addFlash('success', sprintf('La tâche %s a bien été marquée comme faite.', $task->getTitle()));
+        } else {
+            $this->addFlash('success', sprintf('La tâche %s a bien été marquée comme non faite.', $task->getTitle()));
+        }
+
 
         return $this->redirectToRoute('task_list');
     }
 
-    #[Route('/tasks/{id}/delete', name: 'task_delete')]
-    #[IsGranted('ROLE_USER')]
-    public function deleteTaskAction(Task $task, EntityManagerInterface $em): Response
+    #[Route('/tasks/{id}/delete', name: 'task_delete', methods: ['DELETE'])]
+    public function deleteTaskAction(Task $task, Request $request, EntityManagerInterface $em): Response
     {
         $this->denyAccessUnlessGranted('TASK_DELETE', $task);
-        $em->remove($task);
-        $em->flush();
+        // if ($this->isCsrfTokenValid('delete-' . $task->getId(), $request->get('_token'))) {
 
-        $this->addFlash('success', 'La tâche a bien été supprimée.');
+        try {
+            $em->beginTransaction();
+            $em->remove($task);
+            $em->flush();
+            $em->commit();
+
+            $this->addFlash('success', 'La tâche a bien été supprimée.');
+        } catch (\Exception $e) {
+            $em->rollback();
+            $this->addFlash('error', 'Une erreur s\'est produite, la tâche n\'a pu être supprimée !');
+        }
+
+        // }
 
         return $this->redirectToRoute('task_list');
     }

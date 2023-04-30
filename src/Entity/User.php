@@ -12,6 +12,7 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table("users")]
 #[UniqueEntity(fields: ['email'], message: 'Un compte est déjà existant avec cette email')]
+#[UniqueEntity(fields: ['username'], message: 'Un compte est déjà existant avec ce nom d\'utilisateur')]
 
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
@@ -22,6 +23,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column(length: 25, unique: true)]
     #[Assert\NotBlank(message: "Vous devez saisir un nom d'utilisateur.")]
+    #[Assert\Length(
+        min: 2,
+        max: 25,
+        minMessage: "Le nom d'utilisateur doit contenir {{ limit }} caractères minimum",
+        maxMessage: "Le nom d'utilisateur doit contenir {{ limit }} caractères maximum"
+    )]
     private string $username;
 
     #[ORM\Column(length: 180, unique: true)]
@@ -39,6 +46,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @var string The hashed password
      */
     #[ORM\Column]
+    #[Assert\NotBlank(message: "Vous devez saisir un mot de passe.")]
     private string $password;
 
 
