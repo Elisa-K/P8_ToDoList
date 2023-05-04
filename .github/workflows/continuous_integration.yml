@@ -38,7 +38,7 @@ jobs:
       - name: Symfony CLI
         run: |
           curl -sS https://get.symfony.com/cli/installer | bash
-          mv /home/runner/.symfony6/bin/symfony /usr/local/bin/symfony
+          mv /home/runner/.symfony5/bin/symfony /usr/local/bin/symfony
       # —— Deploy
       - name: Build
         run: composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
