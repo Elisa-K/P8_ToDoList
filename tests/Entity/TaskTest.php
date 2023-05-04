@@ -63,16 +63,16 @@ class TaskTest extends KernelTestCase
 		$this->task->setTitle('');
 
 		$errors = $this->container->get('validator')->validate($this->task);
-		$this->assertCount(1, $errors);
+		$this->assertCount(2, $errors);
 	}
 
-	// public function testTooShortTitle(): void
-	// {
-	// 	$this->task->setTitle('a');
+	public function testTooShortTitle(): void
+	{
+		$this->task->setTitle('a');
 
-	// 	$errors = $this->container->get('validator')->validate($this->task);
-	// 	$this->assertCount(1, $errors);
-	// }
+		$errors = $this->container->get('validator')->validate($this->task);
+		$this->assertCount(1, $errors);
+	}
 
 	public function testEmptyContent(): void
 	{
@@ -82,11 +82,4 @@ class TaskTest extends KernelTestCase
 		$this->assertCount(1, $errors);
 	}
 
-// public function testTooShortContent(): void
-// {
-// 	$this->task->setContent('a');
-
-// 	$errors = $this->container->get('validator')->validate($this->task);
-// 	$this->assertCount(1, $errors);
-// }
 }

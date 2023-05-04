@@ -4,14 +4,16 @@ namespace App\Controller;
 
 use App\Entity\Task;
 use App\Form\TaskType;
-use App\Handlers\TaskHandlers\TaskAddHandler;
-use App\Handlers\TaskHandlers\TaskEditHandler;
 use App\Repository\TaskRepository;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use App\Handlers\TaskHandlers\TaskAddHandler;
 use Symfony\Component\HttpFoundation\Request;
+use App\Handlers\TaskHandlers\TaskEditHandler;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use App\Handlers\TaskHandlers\TaskDeleteHandler;
+use App\Handlers\TaskHandlers\TaskDeletetHandler;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 class TaskController extends AbstractController
 {
@@ -38,6 +40,7 @@ class TaskController extends AbstractController
         $form = $this->createForm(TaskType::class, $task)->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+
             $handler->handle($task);
 
             $this->addFlash('success', 'La tâche a été bien été ajoutée.');
@@ -54,6 +57,7 @@ class TaskController extends AbstractController
         $form = $this->createForm(TaskType::class, $task)->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+
             $handler->handle();
 
             $this->addFlash('success', 'La tâche a bien été modifiée.');
@@ -83,24 +87,19 @@ class TaskController extends AbstractController
     }
 
     #[Route('/tasks/{id}/delete', name: 'task_delete', methods: ['DELETE'])]
-    public function deleteTaskAction(Task $task, Request $request, EntityManagerInterface $em): Response
+    public function deleteTaskAction(Task $task, Request $request, TaskDeleteHandler $handler): Response
     {
         $this->denyAccessUnlessGranted('TASK_DELETE', $task);
-        // if ($this->isCsrfTokenValid('delete-' . $task->getId(), $request->get('_token'))) {
 
-        try {
-            $em->beginTransaction();
-            $em->remove($task);
-            $em->flush();
-            $em->commit();
+        /** @var string $token */
+        $token = $request->get('_token');
+
+        if ($this->isCsrfTokenValid('delete-' . $task->getId(), $token)) {
+
+            $handler->handle($task);
 
             $this->addFlash('success', 'La tâche a bien été supprimée.');
-        } catch (\Exception $e) {
-            $em->rollback();
-            $this->addFlash('error', 'Une erreur s\'est produite, la tâche n\'a pu être supprimée !');
         }
-
-        // }
 
         return $this->redirectToRoute('task_list');
     }

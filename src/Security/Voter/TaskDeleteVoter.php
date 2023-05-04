@@ -27,6 +27,7 @@ class TaskDeleteVoter extends Voter
 
     protected function voteOnAttribute(string $attribute, mixed $subject, TokenInterface $token): bool
     {
+        /** @var User $user */
         $user = $token->getUser();
         if (!$user instanceof UserInterface) {
             return false;
@@ -34,7 +35,9 @@ class TaskDeleteVoter extends Voter
 
         switch ($attribute) {
             case self::DELETE:
-                return $this->canDelete($subject, $user);
+                /** @var Task $task */
+                $task = $subject;
+                return $this->canDelete($task, $user);
         }
 
         return false;

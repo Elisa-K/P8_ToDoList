@@ -37,34 +37,11 @@
 
             <div class="card-footer d-flex justify-content-end">
                 {% if is_granted('TASK_DELETE', task)  %}
-                    <a href="" class="btn btn-danger btn-sm pull-right" data-bs-toggle="modal" data-bs-target="#modalDeleteTask{{ task.id }}">Supprimer</a>
-
-                    <div class="modal fade" id="modalDeleteTask{{task.id}}" tabindex="-1" role="dialog" aria-labelledby="confirmDelete" aria-hidden="true">
-                        <div class="modal-dialog" role="document">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title" id="confirmDelete">Supprimer {{ task.title }} ?</h5>
-                                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-                                    <span aria-hidden="true">&times;</span>
-                                    </button>
-                                </div>
-                                <div class="modal-body text-start">
-                                    <span><i class="bi bi-exclamation-triangle"></i></span> Cette action est irréversible.
-                                </div>
-                                <div class="modal-footer">
-                                    <form method="POST" action="{{ path('task_delete', {'id' : task.id }) }}">
-                                        <input type="hidden" name="_method" value="DELETE">
-                                        <input type="hidden" name="_token" value="{{ csrf_token('delete-' ~ task.id) }}">
-                                        <button type="submit" class="btn btn-danger">Supprimer</button>
-                                    </form>
-
-                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-
+                    <form method="POST" action="{{ path('task_delete', {'id' : task.id }) }}">
+                        <input type="hidden" name="_method" value="DELETE">
+                        <input type="hidden" name="_token" value="{{ csrf_token('delete-' ~ task.id) }}">
+                        <button type="submit" class="btn btn-sm btn-danger" id="delete-task-{{ task.id }}">Supprimer</button>
+                    </form>
                 {% endif %}
                 <form method="POST" action="{{ path('task_toggle', {'id' : task.id }) }}">
                     <button class="btn btn-success btn-sm pull-right">

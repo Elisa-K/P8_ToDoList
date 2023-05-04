@@ -176,9 +176,10 @@ class TaskControllerTest extends WebTestCase
 		$this->client->loginUser($testUser);
 
 		$taskRepository = static::getContainer()->get(TaskRepository::class);
-		$testTask = $taskRepository->findOneBy(['author' => $testUser]);
+		$testTask = $taskRepository->findOneBy(['author' => $testUser, 'isDone' => false]);
 
-		$this->client->request('DELETE', '/tasks/' . $testTask->getId() . '/delete');
+		$this->client->request('GET', '/tasks');
+		$this->client->submitForm('delete-task-' . $testTask->getId());
 		$this->assertResponseRedirects('/tasks', Response::HTTP_FOUND);
 		$this->client->followRedirect();
 		$this->assertResponseStatusCodeSame(Response::HTTP_OK);
@@ -208,9 +209,10 @@ class TaskControllerTest extends WebTestCase
 		$this->client->loginUser($testAdmin);
 
 		$taskRepository = static::getContainer()->get(TaskRepository::class);
-		$testTask = $taskRepository->findOneBy(['author' => null]);
+		$testTask = $taskRepository->findOneBy(['author' => null, 'isDone' => false]);
 
-		$this->client->request('DELETE', '/tasks/' . $testTask->getId() . '/delete');
+		$this->client->request('GET', '/tasks');
+		$this->client->submitForm('delete-task-' . $testTask->getId());
 		$this->assertResponseRedirects('/tasks', Response::HTTP_FOUND);
 		$this->client->followRedirect();
 		$this->assertResponseStatusCodeSame(Response::HTTP_OK);
