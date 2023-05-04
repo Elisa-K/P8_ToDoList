@@ -49,7 +49,7 @@ jobs:
       - name : Migrate Database
         run : symfony console d:m:m --env=test
       - name: Load Fixtures
-        run : symfony console d:f:l --env=test
+        run : symfony console d:f:l --env=test --no-interaction
       # —— Code Quality
       - name : Analyse PHP Code (PHPStan)
         run : vendor/bin/phpstan analyse -l 9 src
