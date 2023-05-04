@@ -9,6 +9,13 @@ jobs:
       matrix:
         operating-system: [ubuntu-latest]
         php-versions: ['8.2']
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: ''
+        ports:
+          - 3306:3306
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -43,7 +50,7 @@ jobs:
         run : symfony console d:f:l --env=test
       # —— Code Quality
       - name : Analyse PHP Code (PHPStan)
-        run : vendor/bin/phpstan analyse src
+        run : vendor/bin/phpstan -l 9 analyse src
       # —— Tests
       - name: Tests
         run: vendor/bin/phpunit
