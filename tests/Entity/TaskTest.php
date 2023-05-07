@@ -31,6 +31,12 @@ class TaskTest extends KernelTestCase
 		$this->assertInstanceOf(DateTimeImmutable::class, $this->task->getCreatedAt());
 	}
 
+	public function testSetCreatedAt(): void
+	{
+		$this->task->setCreatedAt(new DateTimeImmutable());
+		$this->assertInstanceOf(DateTimeImmutable::class, $this->task->getCreatedAt());
+	}
+
 	public function testDefaultIsDone(): void
 	{
 		$this->assertSame(false, $this->task->isDone());

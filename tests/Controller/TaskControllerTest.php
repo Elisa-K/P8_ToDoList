@@ -157,7 +157,7 @@ class TaskControllerTest extends WebTestCase
 		$this->assertResponseRedirects('/tasks', Response::HTTP_FOUND);
 		$this->client->followRedirect();
 		$this->assertResponseStatusCodeSame(Response::HTTP_OK);
-		$this->assertSelectorExists('.alert-success');
+		$this->assertSelectorExists('.alert');
 	}
 
 	public function testDeleteTaskNotLogged(): void

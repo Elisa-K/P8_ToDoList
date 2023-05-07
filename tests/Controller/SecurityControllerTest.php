@@ -48,6 +48,19 @@ class SecurityControllerTest extends WebTestCase
 		$this->assertSelectorExists('.alert-danger');
 	}
 
+	public function testLoginUserLogged(): void
+	{
+		$userRepository = static::getContainer()->get(UserRepository::class);
+		$testUser = $userRepository->findOneByEmail('user0@todo.com');
+		$this->client->loginUser($testUser);
+
+		$this->client->request('GET', '/login');
+		$this->assertResponseStatusCodeSame(Response::HTTP_FOUND);
+		$this->client->followRedirect();
+		$this->assertResponseStatusCodeSame(Response::HTTP_OK);
+		$this->assertSelectorExists('a', 'Créer');
+	}
+
 	public function testLogout(): void
 	{
 		$userRepository = static::getContainer()->get(UserRepository::class);
