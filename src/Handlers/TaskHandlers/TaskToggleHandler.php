@@ -6,15 +6,18 @@ use App\Entity\Task;
 use App\Handlers\HandlerManager;
 use Doctrine\ORM\EntityManagerInterface;
 
-class TaskDeleteHandler extends HandlerManager
+class TaskToggleHandler extends HandlerManager
 {
     public function __construct(EntityManagerInterface $entityManager)
     {
         parent::__construct(null, $entityManager);
     }
 
-    public function handle(Task $task): void
+    public function handle(Task $task): bool
     {
-        $this->processDelete($task);
+        $task->toggle(!$task->isDone());
+        $this->processUpdate();
+
+        return $task->isDone();
     }
 }

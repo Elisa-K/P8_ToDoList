@@ -3,7 +3,6 @@
 namespace App\Controller;
 
 use App\Entity\User;
-use App\Form\UserType;
 use App\Handlers\UserHandlers\UserAddHandler;
 use App\Handlers\UserHandlers\UserEditHandler;
 use App\Repository\UserRepository;
@@ -24,34 +23,27 @@ class UserController extends AbstractController
     public function register(Request $request, UserAddHandler $handler): Response
     {
         $user = new User();
-        $form = $this->createForm(UserType::class, $user)->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $handler->handle($user, $form);
-
+        if ($handler->handle($user, $request)) {
             $this->addFlash('success', "L'utilisateur a bien été ajouté.");
 
             return $this->redirectToRoute('user_list');
         }
 
         return $this->render('user/create.html.twig', [
-            'form' => $form,
+            'form' => $handler->getForm(),
         ]);
     }
 
     #[Route('/users/{id}/edit', name: 'user_edit', methods: ['GET', 'POST'])]
     public function editAction(User $user, Request $request, UserEditHandler $handler): Response
     {
-        $form = $this->createForm(UserType::class, $user)->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $handler->handle($user, $form);
-
+        if ($handler->handle($user, $request)) {
             $this->addFlash('success', "L'utilisateur a bien été modifié");
 
             return $this->redirectToRoute('user_list');
         }
 
-        return $this->render('user/edit.html.twig', ['form' => $form, 'user' => $user]);
+        return $this->render('user/edit.html.twig', ['form' => $handler->getForm(), 'user' => $user]);
     }
 }
