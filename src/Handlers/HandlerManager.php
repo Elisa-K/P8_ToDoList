@@ -2,21 +2,20 @@
 
 namespace App\Handlers;
 
-use Doctrine\ORM\EntityManagerInterface;
+
 use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
 
 class HandlerManager implements HandlerInterface
 {
-	private ?FormFactoryInterface $formFactory = null;
+	private FormFactoryInterface $formFactory;
 	private FormInterface $form;
-	private EntityManagerInterface $entityManager;
 
-	public function __construct(?FormFactoryInterface $formFactory, EntityManagerInterface $entityManager)
+
+	public function __construct(FormFactoryInterface $formFactory)
 	{
 		$this->formFactory = $formFactory;
-		$this->entityManager = $entityManager;
 	}
 
 	public function handleForm(string $formType, object $data, Request $request): bool
@@ -30,23 +29,6 @@ class HandlerManager implements HandlerInterface
 		}
 
 		return false;
-	}
-
-	public function processAdd(object $data): void
-	{
-		$this->entityManager->persist($data);
-		$this->entityManager->flush();
-	}
-
-	public function processDelete(object $data): void
-	{
-		$this->entityManager->remove($data);
-		$this->entityManager->flush();
-	}
-
-	public function processUpdate(): void
-	{
-		$this->entityManager->flush();
 	}
 
 	public function getForm(): FormInterface

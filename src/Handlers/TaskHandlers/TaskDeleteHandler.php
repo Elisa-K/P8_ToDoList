@@ -6,15 +6,18 @@ use App\Entity\Task;
 use App\Handlers\HandlerManager;
 use Doctrine\ORM\EntityManagerInterface;
 
-class TaskDeleteHandler extends HandlerManager
+class TaskDeleteHandler
 {
+    private EntityManagerInterface $entityManager;
+
     public function __construct(EntityManagerInterface $entityManager)
     {
-        parent::__construct(null, $entityManager);
+        $this->entityManager = $entityManager;
     }
 
     public function handle(Task $task): void
     {
-        $this->processDelete($task);
+        $this->entityManager->remove($task);
+        $this->entityManager->flush();
     }
 }
