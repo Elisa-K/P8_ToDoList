@@ -6,7 +6,7 @@ use App\Entity\Task;
 use App\Handlers\HandlerManager;
 use Doctrine\ORM\EntityManagerInterface;
 
-class TaskDeleteHandler
+class TaskDeleteHandler extends HandlerManager
 {
     private EntityManagerInterface $entityManager;
 

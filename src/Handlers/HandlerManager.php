@@ -3,17 +3,19 @@
 namespace App\Handlers;
 
 
-use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Form\FormFactoryInterface;
+use Symfony\Contracts\Service\Attribute\Required;
 
 class HandlerManager implements HandlerInterface
 {
-	private FormFactoryInterface $formFactory;
 	private FormInterface $form;
 
+	private FormFactoryInterface $formFactory;
 
-	public function __construct(FormFactoryInterface $formFactory)
+	#[Required]
+	public function setFormFactoryInterface(FormFactoryInterface $formFactory): void
 	{
 		$this->formFactory = $formFactory;
 	}

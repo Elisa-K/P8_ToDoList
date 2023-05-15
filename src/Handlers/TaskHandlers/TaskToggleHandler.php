@@ -3,11 +3,11 @@
 namespace App\Handlers\TaskHandlers;
 
 use App\Entity\Task;
+use App\Handlers\HandlerManager;
 use Doctrine\ORM\EntityManagerInterface;
 
-class TaskToggleHandler
+class TaskToggleHandler extends HandlerManager
 {
-
     private EntityManagerInterface $entityManager;
 
     public function __construct(EntityManagerInterface $entityManager)
