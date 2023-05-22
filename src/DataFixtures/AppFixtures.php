@@ -49,7 +49,7 @@ class AppFixtures extends Fixture
             /** @var User|null $author */
             $author = $faker->randomElement($users);
             $task->setAuthor($author);
-            $task->toggle($faker->boolean());
+            $author === null ? $task->toggle(false) : $task->toggle($faker->boolean());
             $manager->persist($task);
         }
 
